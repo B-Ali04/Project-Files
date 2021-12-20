@@ -1,0 +1,25 @@
+select 
+      SFRSTCR_PIDM,
+      SFRSTCR_TERM_CODE,
+      SFRSTCR_CRN,
+      SFRSTCR_REG_SEQ,
+      SFRSTCR_RSTS_CODE,
+      SFRSTCR_GMOD_CODE
+
+from SFRSTCR
+
+where 
+     SFRSTCR_TERM_CODE = 202220
+     and SFRSTCR_GMOD_CODE = 'Y'
+     and SFRSTCR_RSTS_CODE in ('RE')
+     
+group by
+      SFRSTCR_PIDM,
+      SFRSTCR_TERM_CODE,
+      SFRSTCR_CRN,
+      SFRSTCR_REG_SEQ,
+      SFRSTCR_RSTS_CODE,
+      SFRSTCR_GMOD_CODE
+      
+order by
+      SFRSTCR_CRN
