@@ -1,1 +1,0 @@
-SARADAP_STYP_CODE in ('F', 'C', 'T', 'U')
