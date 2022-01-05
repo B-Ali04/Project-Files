@@ -12,9 +12,12 @@ select
     SPRIDEN.SPRIDEN_LAST_NAME Last_Name,
     SPRIDEN.SPRIDEN_FIRST_NAME First_Name,
     (select * from dual) SAP_CODE,
+    SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM SAP_INTERIM,
+    STVASTD.STVASTD_DESC SAP_DESC,
+    (select * from dual) Buffer_,
     SGBSTDN.SGBSTDN_LEVL_CODE Student_Level,
     GOREMAL.GOREMAL_EMAIL_ADDRESS Email_Address,
-    GOREMAL2.GOREMAL_EMAIL_ADDRESS Per_Email_Address,
+    GOREMAL2.GOREMAL_EMAIL_ADDRESS Pers_Email,
     SARADAP.SARADAP_TERM_CODE_ENTRY Term_Code,
     SHRTGPA.SHRTGPA_HOURS_ATTEMPTED Semester_HC,
     SHRTGPA.SHRTGPA_HOURS_EARNED Semester_HP,
@@ -28,16 +31,25 @@ select
     SPRADDR.SPRADDR_CITY City,
     SPRADDR.SPRADDR_STAT_CODE State,
     substr(SPRADDR.SPRADDR_ZIP,1,5) Zip_Code,
-    (select * from dual) rorspar_fund_code
+    (select * from dual) rorspar_fund_code/*,
 
+    --see outer join below
+    case
+      when exists(
+select * from rpratrm rpratrm where rpratrm.rpratrm_pidm = spriden.spriden_pidm and rpratrm.rpratrm_period = stvterm.stvterm_code 
+and rpratrm.rpratrm_fund_code in ('FSUB', 'FUSB', 'FPLS', 'FPELL', 'FFWS', 'FSEOG', 'FGPLS')) then 'Y' else 'N' end AID
     --select * from rpratrm 
-
+    */
+    
 from
     SPRIDEN SPRIDEN
 
     join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202220--:ListBox1.STVTERM_CODE
 
-    join SPBPERS SPBPERS on SPBPERS.SPBPERS_pidm = SPRIDEN.SPRIDEN_PIDM
+    join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
+         and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, 202220)
+         and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
+         and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
 
     join GOREMAL GOREMAL on GOREMAL.GOREMAL_PIDM = SPRIDEN.SPRIDEN_PIDM
         and GOREMAL.GOREMAL_PREFERRED_IND = 'Y'
@@ -47,24 +59,31 @@ from
     left outer join GOREMAL GOREMAL2 on GOREMAL2.GOREMAL_PIDM = SPRIDEN.SPRIDEN_PIDM
         and GOREMAL2.GOREMAL_EMAL_CODE = 'PERS'
         and GOREMAL2.GOREMAL_STATUS_IND = 'A'
+        and GOREMAL2.GOREMAL_VERSION = (
+            select max(GOREMAL_VERSION)
+            from GOREMAL GOREMAL
+            where GOREMAL.GOREMAL_PIDM = GOREMAL2.GOREMAL_PIDM
+            and GOREMAL2.GOREMAL_EMAL_CODE = 'PERS'
+            and GOREMAL2.GOREMAL_STATUS_IND = 'A'
+        )
         
     join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
          and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, 202220)
          and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
          and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
 
-    join spraddr spraddr on spraddr.spraddr_pidm = spriden.spriden_pidm 
-         and spraddr.spraddr_atyp_code = 'PR'    
-    
-    join shrtgpa shrtgpa on shrtgpa.shrtgpa_pidm = spriden.spriden_pidm
+    left outer join shrtgpa shrtgpa on shrtgpa.shrtgpa_pidm = spriden.spriden_pidm
          and shrtgpa_term_code = stvterm.stvterm_code
          and shrtgpa.shrtgpa_gpa_type_ind = 'I' 
+         --above join needs final testing
     
     left outer join SHRLGPA SHRLGPA on SHRLGPA.SHRLGPA_PIDM = SPRIDEN.SPRIDEN_PIDM
          and SHRLGPA.SHRLGPA_LEVL_CODE = SGBSTDN.SGBSTDN_LEVL_CODE
          and SHRLGPA.SHRLGPA_GPA_TYPE_IND = 'O'
          and SHRLGPA.SHRLGPA_GPA is not null         
+
     --left outer join rpratrm rpratrm on rpratrm.rpratrm_pidm = spriden.spriden_pidm and rpratrm.rpratrm_period = stvterm.stvterm_code
+           -- ...to be included following 1/5/2021
 
  left outer join SPRADDR SPRADDR on SPRADDR.SPRADDR_PIDM = SPRIDEN.SPRIDEN_PIDM
         and SPRADDR.SPRADDR_ATYP_CODE in ('PR')
@@ -83,35 +102,15 @@ from
              and SPRADDR1.SPRADDR_STATUS_IND is null)
              
     left outer join SARADAP SARADAP on SARADAP.SARADAP_PIDM = SPRIDEN.SPRIDEN_PIDM
-        and SARADAP.SARADAP_TERM_CODE_ENTRY = STVTERM.STVTERM_CODE
-                     
-where spriden_ntyp_code is null and spriden_change_ind is null         
-and exists(
-select * from rpratrm rpratrm where rpratrm.rpratrm_pidm = spriden.spriden_pidm and rpratrm.rpratrm_period = stvterm.stvterm_code 
-and rpratrm.rpratrm_fund_code in ('FSUB', 'FUSB', 'FPLS', 'FPELL', 'FFWS', 'FSEOG', 'FGPLS'))
-order by spriden_last_name         
+        and SARADAP.SARADAP_TERM_CODE_ENTRY = STVTERM.STVTERM_CODE         
 
+    left outer join SHRTTRM SHRTTRM on SHRTTRM.SHRTTRM_PIDM = SPRIDEN.SPRIDEN_PIDM and SHRTTRM.SHRTTRM_TERM_CODE = STVTERM_CODE
 
-/*
+    left outer join STVASTD STVASTD on STVASTD.STVASTD_CODE = SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM
 
-STAT CHAT 
-select * from spriden
+where 
+     spriden_ntyp_code is null 
+     and spriden_change_ind is null         
 
-    join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
-         and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, 202220)
-         and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
-         and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
-
-where
-spriden_ntyp_code is null and spriden_change_ind is null
-and exists(select * from rpratrm
-where
-rpratrm_pidm = spriden_pidm
-and rpratrm_aidy_code = 2021
-and rpratrm_fund_code in ('FSUB', 'FUSB', 'FPLS', 'FPELL', 'FFWS', 'FSEOG', 'FGPLS')
-and rpratrm_awst_code in ('A', 'WA','MA'))
-
-order by spriden_last_name
-
-
-*/
+order by 
+    spriden_last_name
