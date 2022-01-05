@@ -1,3 +1,12 @@
+/*
+STAT CHECK!
+in 2021, 1279 students recieved an offer for financial aid
+of that group only 809 registered to take a course
+
+and thats what we know so far.
+
+*/
+
 select    
     SPRIDEN.SPRIDEN_ID Banner_ID,
     SPRIDEN.SPRIDEN_LAST_NAME Last_Name,
@@ -81,3 +90,28 @@ and exists(
 select * from rpratrm rpratrm where rpratrm.rpratrm_pidm = spriden.spriden_pidm and rpratrm.rpratrm_period = stvterm.stvterm_code 
 and rpratrm.rpratrm_fund_code in ('FSUB', 'FUSB', 'FPLS', 'FPELL', 'FFWS', 'FSEOG', 'FGPLS'))
 order by spriden_last_name         
+
+
+/*
+
+STAT CHAT 
+select * from spriden
+
+    join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
+         and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, 202220)
+         and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
+         and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
+
+where
+spriden_ntyp_code is null and spriden_change_ind is null
+and exists(select * from rpratrm
+where
+rpratrm_pidm = spriden_pidm
+and rpratrm_aidy_code = 2021
+and rpratrm_fund_code in ('FSUB', 'FUSB', 'FPLS', 'FPELL', 'FFWS', 'FSEOG', 'FGPLS')
+and rpratrm_awst_code in ('A', 'WA','MA'))
+
+order by spriden_last_name
+
+
+*/
