@@ -93,8 +93,8 @@ from
     left outer join STVASTD STVASTD on STVASTD.STVASTD_CODE = SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM
        
 where 
-     spriden_ntyp_code is null 
-     and spriden_change_ind is null         
+     SPRIDEN.SPRIDEN_NTYP_CODE is null 
+     and SPRIDEN.SPRIDEN_CHNAGE_IND is null         
 
 order by 
-    spriden_last_name
+    SPRIDEN.SPRIDEN_LAST_NAME
