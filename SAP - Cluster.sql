@@ -39,7 +39,14 @@ select
 select * from rpratrm rpratrm where rpratrm.rpratrm_pidm = spriden.spriden_pidm and rpratrm.rpratrm_period = stvterm.stvterm_code 
 and rpratrm.rpratrm_fund_code in ('FSUB', 'FUSB', 'FPLS', 'FPELL', 'FFWS', 'FSEOG', 'FGPLS')) then 'Y' else 'N' end AID
     --select * from rpratrm 
-    */
+    */,
+    SHRTTRM.SHRTTRM_term_code,
+SHRTTRM.SHRTTRM_record_status_date,
+    SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM SAP_CODE_1,
+    SHRTTRM.SHRTTRM_ASTD_DATE_END_OF_TERM SAP_TERM_1
+        
+    --SHRTRM SEQUENCE
+    
     
 from
     SPRIDEN SPRIDEN
@@ -51,21 +58,21 @@ from
          and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
          and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
 
-    join GOREMAL GOREMAL on GOREMAL.GOREMAL_PIDM = SPRIDEN.SPRIDEN_PIDM
+    left outer join GOREMAL GOREMAL on GOREMAL.GOREMAL_PIDM = SPRIDEN.SPRIDEN_PIDM
         and GOREMAL.GOREMAL_PREFERRED_IND = 'Y'
         and GOREMAL.GOREMAL_EMAL_CODE = 'SU'
         and GOREMAL.GOREMAL_STATUS_IND = 'A'
-    
+ 
     left outer join GOREMAL GOREMAL2 on GOREMAL2.GOREMAL_PIDM = SPRIDEN.SPRIDEN_PIDM
         and GOREMAL2.GOREMAL_EMAL_CODE = 'PERS'
         and GOREMAL2.GOREMAL_STATUS_IND = 'A'
-        and GOREMAL2.GOREMAL_VERSION = (
-            select max(GOREMAL_VERSION)
+        and GOREMAL2.GOREMAL_SURROGATE_ID = (
+            select max(GOREMAL_SURROGATE_ID)
             from GOREMAL GOREMAL
             where GOREMAL.GOREMAL_PIDM = GOREMAL2.GOREMAL_PIDM
             and GOREMAL2.GOREMAL_EMAL_CODE = 'PERS'
             and GOREMAL2.GOREMAL_STATUS_IND = 'A'
-        )
+        ) 
         
     join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
          and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, 202220)
@@ -84,6 +91,7 @@ from
 
     --left outer join rpratrm rpratrm on rpratrm.rpratrm_pidm = spriden.spriden_pidm and rpratrm.rpratrm_period = stvterm.stvterm_code
            -- ...to be included following 1/5/2021
+           -- left outer join SHRTTRM SHRTTRM on SHRTTRM.SHRTTRM_PIDM = SPRIDEN.SPRIDEN_PIDM and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM is not null and SHRTTRM.SHRTTRM_TERM_CODE <= STVTERM.STVTERM_CODE
 
  left outer join SPRADDR SPRADDR on SPRADDR.SPRADDR_PIDM = SPRIDEN.SPRIDEN_PIDM
         and SPRADDR.SPRADDR_ATYP_CODE in ('PR')
