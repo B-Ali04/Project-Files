@@ -56,9 +56,9 @@ from
             and GOREMAL2.GOREMAL_STATUS_IND = 'A'
         )
 
-    left outer join shrtgpa shrtgpa on shrtgpa.shrtgpa_pidm = spriden.spriden_pidm
-         and shrtgpa_term_code = stvterm.stvterm_code
-         and shrtgpa.shrtgpa_gpa_type_ind = 'I' 
+    left outer join SHRTGPA SHRTGPA on SHRTGPA.SHRTGPA_PIDM = SPRIDEN.SPRIDEN_PIDM
+         and SHRTGPA.SHRTGPA_TERM_CODE = STVTERM.STVTERM_CODE
+         and SHRTGPA.SHRTGPA_TYPE_IND = 'I' 
              
     left outer join SHRLGPA SHRLGPA on SHRLGPA.SHRLGPA_PIDM = SPRIDEN.SPRIDEN_PIDM
          and SHRLGPA.SHRLGPA_LEVL_CODE = SGBSTDN.SGBSTDN_LEVL_CODE
