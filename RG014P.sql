@@ -13,7 +13,7 @@ Select
 from
     SPRIDEN SPRIDEN
 /*****************************************************************************************************************************************************/
-    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202240--:DropDown1.STVTERM_CODE
+    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202240 --:DropDown1.STVTERM_CODE
 /*****************************************************************************************************************************************************/
     join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
          --and SGBSTDN.SGBSTDN_LEVL_CODE = 'UG'
@@ -61,7 +61,7 @@ where
         and SFRSTCR.SFRSTCR_RSTS_CODE in ('RE','RW'))
 /*****************************************************************************************************************************************************/
 and(SHRLGPA.SHRLGPA_GPA > 3.1750000)
-and exists(select * from shrtgpa where shrtgpa_pidm = spriden_pidm and shrtgpa_term_code < stvterm_code and shrtgpa_gpa > 3.175 )
+and exists(select * from shrtgpa where shrtgpa_pidm = spriden_pidm and shrtgpa_term_code < stvterm_code and shrtgpa_gpa >= 3.175000000 )
 and SGBSTDN.SGBSTDN_STYP_CODE not in ('G','T','F','N')
 --and SGBSTDN.SGBSTDN_STYP_CODE in ('C','D')
 
