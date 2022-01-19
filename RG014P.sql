@@ -2,7 +2,7 @@ Select
     SPRIDEN.SPRIDEN_ID Banner_ID,
     f_format_name(SPRIDEN.SPRIDEN_PIDM, 'LFMI') Student_Name,
     GORADID.GORADID_ADDITIONAL_ID SU_ID,
-    STVCLAS.STVCLAS_CODE Student_Class,
+    STVCLAS.STVCLAS_DESC Student_Class,
     SGBSTDN.SGBSTDN_DEGC_CODE_1 Degree_Program,
     SGBSTDN.SGBSTDN_TERM_CODE_EFF Semester,
     STVSTYP.STVSTYP_DESC Student_Type,
@@ -13,10 +13,10 @@ Select
 from
     SPRIDEN SPRIDEN
 /*****************************************************************************************************************************************************/
-    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202140--:DropDown1.STVTERM_CODE
+    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202220--:DropDown1.STVTERM_CODE
 /*****************************************************************************************************************************************************/
     join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
-         and SGBSTDN.SGBSTDN_LEVL_CODE = 'UG'
+         --and SGBSTDN.SGBSTDN_LEVL_CODE = 'UG'
          and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
          and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, STVTERM.STVTERM_CODE)
 
@@ -62,12 +62,14 @@ where
 /*****************************************************************************************************************************************************/
 and(SHRLGPA.SHRLGPA_GPA > 3.1750000)
 and exists(select * from shrtgpa where shrtgpa_pidm = spriden_pidm and shrtgpa_term_code < stvterm_code and shrtgpa_gpa > 3.175 )
-and SGBSTDN.SGBSTDN_STYP_CODE not in ('G','T','F')
+--and SGBSTDN.SGBSTDN_STYP_CODE not in ('G','T','F')
+and SGBSTDN.SGBSTDN_STYP_CODE in ('C','D')
 
 
 --$beginorder
 
 order by
-    --STVSTYP.STVSTYP_SURROGATE_ID, STVCLAS.STVCLAS_SURROGATE_ID, 
+    STVSTYP.STVSTYP_SURROGATE_ID,
+    --STVCLAS.STVCLAS_SURROGATE_ID, 
     --SPRIDEN.SPRIDEN_SEARCH_LAST_NAME
     SHRLGPA_GPA asc
