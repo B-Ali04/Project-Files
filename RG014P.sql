@@ -13,12 +13,13 @@ Select
 from
     SPRIDEN SPRIDEN
 /*****************************************************************************************************************************************************/
-    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202220--:DropDown1.STVTERM_CODE
+    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202240--:DropDown1.STVTERM_CODE
 /*****************************************************************************************************************************************************/
     join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
          --and SGBSTDN.SGBSTDN_LEVL_CODE = 'UG'
          and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
          and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, STVTERM.STVTERM_CODE)
+         and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
 
     join GORADID GORADID on GORADID.GORADID_PIDM = SPRIDEN.SPRIDEN_PIDM
          and GORADID.GORADID_ADID_CODE = 'SUID'
@@ -52,24 +53,23 @@ where
     SPRIDEN.SPRIDEN_NTYP_CODE is null
     and SPRIDEN.SPRIDEN_CHANGE_IND is null
     
-    
     and exists(
         select *
         from SFRSTCR SFRSTCR
         where SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
-        and SFRSTCR.SFRSTCR_TERM_CODE = STVTERM.STVTERM_CODE
+        and SFRSTCR.SFRSTCR_TERM_CODE = 202220--STVTERM.STVTERM_CODE
         and SFRSTCR.SFRSTCR_RSTS_CODE in ('RE','RW'))
 /*****************************************************************************************************************************************************/
 and(SHRLGPA.SHRLGPA_GPA > 3.1750000)
 and exists(select * from shrtgpa where shrtgpa_pidm = spriden_pidm and shrtgpa_term_code < stvterm_code and shrtgpa_gpa > 3.175 )
---and SGBSTDN.SGBSTDN_STYP_CODE not in ('G','T','F', 'N')
-and SGBSTDN.SGBSTDN_STYP_CODE in ('C','D')
-
+and SGBSTDN.SGBSTDN_STYP_CODE not in ('G','T','F','N')
+--and SGBSTDN.SGBSTDN_STYP_CODE in ('C','D')
 
 --$beginorder
 
 order by
-    STVSTYP.STVSTYP_SURROGATE_ID,
+--SGBSTDN.SGBSTDN_STST_CODE, 
+--    STVSTYP.STVSTYP_SURROGATE_ID,
     --STVCLAS.STVCLAS_SURROGATE_ID, 
-    --SPRIDEN.SPRIDEN_SEARCH_LAST_NAME
-    SHRLGPA_GPA asc
+    SPRIDEN.SPRIDEN_SEARCH_LAST_NAME
+  --  SHRLGPA_GPA asc
