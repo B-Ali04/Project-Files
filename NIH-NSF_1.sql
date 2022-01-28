@@ -1,6 +1,9 @@
 Select
     GORADID.GORADID_ADDITIONAL_ID SU_ID,
-    --unit_name, unit_id, cip_code, person_id
+    (select 0 from dual) unit_name,
+    (select 0 from dual) unit_id,    
+    --unit_name, unit_id, cip_code, 
+    (select 0 from dual) person_id,
 
     SPBPERS.SPBPERS_ETHN_CDE citizen_race_ethnicity_code,
 
