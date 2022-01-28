@@ -44,18 +44,19 @@ where
               and SFRSTCR.SFRSTCR_TERM_CODE = STVTERM.STVTERM_CODE
               and SFRSTCR.SFRSTCR_RSTS_CODE in ('RE','RW')
     )
-
-and exists
-        (select * from SFRSTCR SFRSTCR
-            inner join SSBSECT SSBSECT on SSBSECT.SSBSECT_CRN = SFRSTCR.SFRSTCR_CRN
-            where SSBSECT.SSBSECT_SUBJ_CODE = ''
-            and SSBSECT.SSBSECT_CRSE_NUMB = ''
-            and SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
-            and SFRSTCR.SFRSTCR_RSTS_CODE = 'RE' )
-            
+--Course Selection
             and ssbsect_term_code = stvterm_Code
             and SSBSECT.SSBSECT_SUBJ_CODE = ''
             and SSBSECT.SSBSECT_CRSE_NUMB = ''
+and exists
+        (select * from SFRSTCR SFRSTCR
+            inner join SSBSECT SSBSECT on SSBSECT.SSBSECT_CRN = SFRSTCR.SFRSTCR_CRN
+            where SSBSECT.SSBSECT_SUBJ_CODE = SSBSECT.SSBSECT_SUBJ_CODE
+            and SSBSECT.SSBSECT_CRSE_NUMB = SSBSECT.SSBSECT_CRSE_NUMB
+            and SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
+            and SFRSTCR.SFRSTCR_RSTS_CODE = 'RE' )
+            
+
 --$addfilter
 
 --$beginorder
