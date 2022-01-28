@@ -31,7 +31,7 @@ Select
 --   support_source_code, support_mechanism_code
     (select 1 from dual) support_source_code,
     (select 2 from dual) support_mechanism_code,
-    SRVYSTU.SRVYSTU_RESIDENCY_DESC Residental_Desc,
+    SRVYSTU.SRVYSTU_CITIZEN_DESC Citizenship_Desc,
     STVDEPT.STVDEPT_DESC Department_desc
 
 from
