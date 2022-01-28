@@ -56,7 +56,6 @@ and exists
             and SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
             and SFRSTCR.SFRSTCR_RSTS_CODE = 'RE' )
             
-
 --$addfilter
 
 --$beginorder
