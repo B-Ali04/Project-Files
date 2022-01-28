@@ -1,0 +1,66 @@
+Select
+    SPRIDEN.SPRIDEN_ID Banner_ID,
+    f_format_name(SPRIDEN.SPRIDEN_PIDM, 'LF30') Student_Name,
+    SPRIDEN.SPRIDEN_LAST_NAME Last_Name,
+    SPRIDEN.SPRIDEN_FIRST_NAME First_Name,
+
+    STVCLAS.STVCLAS_DESC Student_Class,
+    STVMAJR.STVMAJR_DESC Major_Program,
+    STVDEGC.STVDEGC_CODE Degree_Program,
+    SGBSTDN.SGBSTDN_STYP_CODE Reg_Type,
+    SGBSTDN.SGBSTDN_STST_CODE STST_CODE,
+    SSBSECT.SSBSECT_SUBJ_CODE ||' '|| SSBSECT.SSBSECT_CRSE_NUMB reg_course,
+    SSBSECT_TERM_CODE,
+    SFRSTCR_RSTS_CODE,
+    SRVYSTU.SRVYSTU_RESIDENCY_DESC Residental_Desc
+
+from
+    SPRIDEN SPRIDEN
+
+    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202220--:ListBox1.STVTERM_CODE
+
+    join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
+         and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, STVTERM.STVTERM_CODE)
+         and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS', 'UNDC')
+         and SGBSTDN.SGBSTDN_STST_CODE = 'AS'
+
+    left outer join STVCLAS STVCLAS on STVCLAS.STVCLAS_CODE = f_class_calc_fnc(SGBSTDN.SGBSTDN_PIDM,SGBSTDN.SGBSTDN_LEVL_CODE, STVTERM.STVTERM_CODE)
+
+    left outer join STVDEGC STVDEGC on STVDEGC.STVDEGC_CODE = SGBSTDN.SGBSTDN_DEGC_CODE_1
+
+    left outer join STVMAJR STVMAJR on STVMAJR.STVMAJR_CODE = SGBSTDN.SGBSTDN_MAJR_CODE_1
+         
+    left outer join SFRSTCR SFRSTCR on SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM 
+          and SFRSTCR.SFRSTCR_RSTS_CODE = 'RE'                 
+
+    left outer join SSBSECT SSBSECT on SSBSECT.SSBSECT_CRN = SFRSTCR.SFRSTCR_CRN         
+
+where
+    SPRIDEN.SPRIDEN_NTYP_CODE is null
+    and SPRIDEN.SPRIDEN_CHANGE_IND is null
+    and exists(
+        select * from SFRSTCR SFRSTCR
+        where SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
+              and SFRSTCR.SFRSTCR_TERM_CODE = STVTERM.STVTERM_CODE
+              and SFRSTCR.SFRSTCR_RSTS_CODE in ('RE','RW')
+    )
+
+and exists
+        (select * from SFRSTCR SFRSTCR
+            inner join SSBSECT SSBSECT on SSBSECT.SSBSECT_CRN = SFRSTCR.SFRSTCR_CRN
+            where SSBSECT.SSBSECT_SUBJ_CODE = ''
+            and SSBSECT.SSBSECT_CRSE_NUMB = ''
+            and SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
+            and SFRSTCR.SFRSTCR_RSTS_CODE = 'RE' )
+            
+            and ssbsect_term_code = stvterm_Code
+            and SSBSECT.SSBSECT_SUBJ_CODE = ''
+            and SSBSECT.SSBSECT_CRSE_NUMB = ''
+--$addfilter
+
+--$beginorder
+
+order by
+    stvclas_Code,ssbsect_term_code, SSBSECT.SSBSECT_SUBJ_CODE, SSBSECT.SSBSECT_CRSE_NUMB, SPRIDEN.SPRIDEN_SEARCH_LAST_NAME
+
+--$endorder
