@@ -10,7 +10,9 @@ Select
     SPBPERS.SPBPERS_SEX sex_code,
     SGBSTDN.SGBSTDN_STYP_CODE firsttime_code,
     (select 1 from dual) support_source_code,
-    (select 2 from dual) support_mechanism_code
+    (select 2 from dual) support_mechanism_code,
+    SRVYSTU.SRVYSTU_CITIZEN_DESC Citizenship_Desc,
+    STVDEPT.STVDEPT_DESC Department_desc
 
     
 --   support_source_code, support_mechanism_code
@@ -41,7 +43,17 @@ from
          and srvystu_type_code not in ('X')
          and srvystu_curric_1_major_code not in ('UNDC','SUS','VIS','0000')
          
-    join STVMAJR STVMAJR on STVMAJR.STVMAJR_CODE = SGBSTDN.SGBSTDN_MAJR_CODE_1
+    left outer join STVCLAS STVCLAS on STVCLAS.STVCLAS_CODE = f_class_calc_fnc(SGBSTDN.SGBSTDN_PIDM,SGBSTDN.SGBSTDN_LEVL_CODE, STVTERM.STVTERM_CODE)
+
+    left outer join STVDEPT STVDEPT on STVDEPT.STVDEPT_CODE = SGBSTDN.SGBSTDN_DEPT_CODE
+
+    left outer join STVDEGC STVDEGC on STVDEGC.STVDEGC_CODE = SGBSTDN.SGBSTDN_DEGC_CODE_1
+
+    left outer join STVMAJR STVMAJR on STVMAJR.STVMAJR_CODE = SGBSTDN.SGBSTDN_MAJR_CODE_1
+
+    join STVSTYP STVSTYP on STVSTYP.STVSTYP_CODE = SGBSTDN.SGBSTDN_STYP_CODE
+    
+    join STVCIPC STVCIPC on STVCIPC.STVCIPC_CODE = STVMAJR.STVMAJR_CIPC_CODE
     
     join STVCIPC STVCIPC on STVCIPC.STVCIPC_CODE = STVMAJR.STVMAJR_CIPC_CODE
     
