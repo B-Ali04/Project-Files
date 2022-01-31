@@ -10,6 +10,7 @@ Select
 
     CASE
         when SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'PHD' then 1
+        when SGBSTDN.SGBSTDN_DEGC_CODE_1 like 'M%%' then 2
         else 2
     END degree_code,
 
@@ -25,7 +26,7 @@ Select
     END sex_code,
 
     CASE
-        when SGBSTDN.SGBSTDN_STYP_CODE = 'N' then 1
+        when SGBSTDN.SGBSTDN_STYP_CODE in ('N', 'F', 'T','G') then 1
         else 2
     END firsttime_code,    
 --   support_source_code, support_mechanism_code
