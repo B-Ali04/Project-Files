@@ -6,10 +6,11 @@ select
     SHRTTRM.SHRTTRM_TERM_CODE ASTD_Term_Code,
     SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM Prev_ASTD_Code, 
     SHRTTRM2.SHRTTRM_TERM_CODE Prev_Term_Code
-       
-    from SPRIDEN SPRIDEN
     
-    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202110
+    
+    from SPRIDEN
+    
+    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202140
     
     left outer join SHRTTRM SHRTTRM on SHRTTRM.SHRTTRM_PIDM = SPRIDEN.SPRIDEN_PIDM
          and SHRTTRM.SHRTTRM_TERM_CODE = STVTERM.STVTERM_CODE
@@ -44,15 +45,13 @@ select
 where
     SPRIDEN.SPRIDEN_NTYP_CODE is null
     and SPRIDEN.SPRIDEN_CHANGE_IND is null
-/*
-VALID: consequtive terms on probation (202140 ref.)
+/*  VALID: consequtive terms on probation (202140 ref.)  */
     and (
     (SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%' and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%')
-         )
-*/
-/*
-VALID: prevouis term on probation w/ current semester GPA standards (202140 ref.)
-     AND( SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%'
+         
+
+/* VALID: prevouis term on probation w/ current semester GPA standards (202140 ref.)  */
+     or( SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%'
       and (
        SHRLGPA.SHRLGPA_GPA < 2.00
        and SHRLGPA.SHRLGPA_GPA_HOURS > 60
@@ -65,13 +64,11 @@ VALID: prevouis term on probation w/ current semester GPA standards (202140 ref.
        and SHRLGPA.SHRLGPA_GPA_HOURS < 30
             )  
             )
-*/    
-/*
+)
+/* VALID: Ranger School standards (202110 ref.)*/
+or ( SHRTGPA.SHRTGPA_GPA < 2.000 and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS')       
 
-VALID: Ranger School standards
-and ( SHRTGPA.SHRTGPA_GPA < 2.000 and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS')       
 
-*/  
     and exists(
         select *
         from SFRSTCR SFRSTCR
