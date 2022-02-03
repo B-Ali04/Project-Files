@@ -6,6 +6,7 @@ Select
     STVSTYP.STVSTYP_DESC Student_Type,
     substr(SHRTGPA.SHRTGPA_GPA,1,4) Semester_GPA,
     substr(SHRLGPA.SHRLGPA_GPA,1,4) Cumulative_GPA,
+    SHRLGPA.SHRLGPA_GPA_HOURS Cummulative_GPA_Hours,
     GOREMAL.GOREMAL_EMAIL_ADDRESS Email,
     SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM ASTD_Code
 
@@ -45,28 +46,13 @@ where
 --select * from stvCLAS
 --select distinct sgbstdn_degc_code_1 from sgbstdn
 
- (SHRTGPA.SHRTGPA_GPA < 2.000)
+-- (SHRTGPA.SHRTGPA_GPA < 2.000)
 --((SHRLGPA.SHRLGPA_GPA < 2.000) and (SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS'))
 -- ((SHRTGPA.SHRTGPA_GPA < 2.000) and (SGBSTDN.SGBSTDN_DEGC_CODE_1 in ('BS','BLA')))
 
-and (
-       (
-       SHRLGPA_GPA < 2.00
-       AND SHRLGPA_GPA_HOURS > 60
-            )
-   OR(SHRLGPA_GPA < 1.850
-       AND SHRLGPA_GPA_HOURS <= 60
-       AND SHRLGPA_GPA_HOURS >= 31
-            )             
-   OR(SHRLGPA_GPA < 1.700
-       AND SHRLGPA_GPA_HOURS < 30
-            )
-                      
-         ) 
-   and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM = 'P1'  
-
-    and SPRIDEN.SPRIDEN_NTYP_CODE is null
+    SPRIDEN.SPRIDEN_NTYP_CODE is null
     and SPRIDEN.SPRIDEN_CHANGE_IND is null
+    
     and exists(
         select *
         from SFRSTCR SFRSTCR
@@ -74,7 +60,31 @@ and (
         and SFRSTCR.SFRSTCR_TERM_CODE = STVTERM.STVTERM_CODE
         and SFRSTCR.SFRSTCR_RSTS_CODE in ('RE','RW')
     )
+    and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM = 'P1'  
+    /*
+    build a varibale conatining elemnets form the previou semester.
+    basic needs of the variable are the term code is at max, the term 
+    prior regradless of degree code. enusre that the term code is relevant.
+    enusre that term codes are accurate between term gpa and level code.
     
+    
+    
+    */
+--and (SHRTGPA.SHRTGPA_GPA < 2.000)
+
+and (
+       (
+       SHRLGPA.SHRLGPA_GPA < 2.00
+       and SHRLGPA.SHRLGPA_GPA_HOURS > 60
+            )
+   or(SHRLGPA.SHRLGPA_GPA < 1.850
+       and SHRLGPA.SHRLGPA_GPA_HOURS <= 60
+       and SHRLGPA.SHRLGPA_GPA_HOURS >= 31
+            )             
+   or(SHRLGPA.SHRLGPA_GPA < 1.700
+       and SHRLGPA.SHRLGPA_GPA_HOURS < 30
+            )  
+    )
     
 order by 
       STVCLAS.STVCLAS_CODE, SPRIDEN.SPRIDEN_LAST_NAME 
