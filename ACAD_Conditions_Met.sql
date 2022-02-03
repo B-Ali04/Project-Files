@@ -8,9 +8,9 @@ select
     SHRTTRM2.SHRTTRM_TERM_CODE Prev_Term_Code
     
     
-    from spriden
+    from SPRIDEN
     
-    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202140
+    join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202110
     
     left outer join SHRTTRM SHRTTRM on SHRTTRM.SHRTTRM_PIDM = SPRIDEN.SPRIDEN_PIDM
          and SHRTTRM.SHRTTRM_TERM_CODE = STVTERM.STVTERM_CODE
@@ -45,13 +45,16 @@ select
 where
     SPRIDEN.SPRIDEN_NTYP_CODE is null
     and SPRIDEN.SPRIDEN_CHANGE_IND is null
-    and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM = 'P1'
-    --and SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM = SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM
-/*    and (SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM = 'P1'
-
-    
-     AND(
-        (
+/*
+VALID: consequtive terms on probation (202140 ref.)
+    and (
+    (SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%' and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%')
+         )
+*/
+/*
+VALID: prevouis term on probation w/ current semester GPA standards (202140 ref.)
+     AND( SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%'
+      and (
        SHRLGPA.SHRLGPA_GPA < 2.00
        and SHRLGPA.SHRLGPA_GPA_HOURS > 60
             )
@@ -63,32 +66,13 @@ where
        and SHRLGPA.SHRLGPA_GPA_HOURS < 30
             )  
             )
-    )
-    or( SHRTGPA.SHRTGPA_GPA < 2.000 and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS')
-*/
-
-
+*/    
 /*
-VALID QUERY: INVALID PROBLEM LOGIC
-    and (exists(
-            select * from SFRSTCR SFRSTCR
-            join shrttrm s on s.shrttrm_pidm = SFRSTCR.SFRSTCR_PIDM
-                 and s.SHRTTRM_TERM_CODE = (
-                     select max( SHRTTRM_TERM_CODE) from SHRTTRM s2
-                     where s2.SHRTTRM_PIDM = s.sHRTTRM_PIDM
-                     and s2.SHRTTRM_TERM_CODE < STVTERM.STVTERM_CODE
-                 )
-            where SFRSTCR.SFRSTCR_PIDM = SPRIDEN.SPRIDEN_PIDM
-              and SFRSTCR.SFRSTCR_TERM_CODE = STVTERM.STVTERM_CODE
-              and SFRSTCR.SFRSTCR_RSTS_CODE in ('RE','RW')
-              and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM = 'P1'
-    
-              )
-    )
-*/
-/*
-BOTTOM LINE: did they go here right then?
-*/
+
+VALID: Ranger School standards
+and ( SHRTGPA.SHRTGPA_GPA < 2.000 and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS')       
+
+*/  
     and exists(
         select *
         from SFRSTCR SFRSTCR
