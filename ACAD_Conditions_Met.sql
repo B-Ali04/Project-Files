@@ -7,8 +7,7 @@ select
     SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM Prev_ASTD_Code, 
     SHRTTRM2.SHRTTRM_TERM_CODE Prev_Term_Code
     
-    
-    from SPRIDEN
+    from SPRIDEN SPRIDEN
     
     join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202140
     
@@ -21,6 +20,7 @@ select
                      where s2.SHRTTRM_PIDM = SHRTTRM2.SHRTTRM_PIDM
                      and s2.SHRTTRM_TERM_CODE < STVTERM.STVTERM_CODE
          )
+    
     join SGBSTDN SGBSTDN on SGBSTDN.SGBSTDN_PIDM = SPRIDEN.SPRIDEN_PIDM
         and SGBSTDN.SGBSTDN_TERM_CODE_EFF = fy_sgbstdn_eff_term(SGBSTDN.SGBSTDN_PIDM, STVTERM.STVTERM_CODE)
         and SGBSTDN.SGBSTDN_MAJR_CODE_1 not in ('0000', 'EHS', 'SUS', 'VIS')
@@ -45,29 +45,29 @@ select
 where
     SPRIDEN.SPRIDEN_NTYP_CODE is null
     and SPRIDEN.SPRIDEN_CHANGE_IND is null
+
 /*  VALID: consequtive terms on probation (202140 ref.)  */
     and (
-    (SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%' and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%')
+        (SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%' and SHRTTRM.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%')
          
-
 /* VALID: prevouis term on probation w/ current semester GPA standards (202140 ref.)  */
-     or( SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%'
-      and (
-       SHRLGPA.SHRLGPA_GPA < 2.00
-       and SHRLGPA.SHRLGPA_GPA_HOURS > 60
+    or( SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM like 'P%'
+        and (
+        SHRLGPA.SHRLGPA_GPA < 2.00
+        and SHRLGPA.SHRLGPA_GPA_HOURS > 60
             )
     or(SHRLGPA.SHRLGPA_GPA < 1.850
-       and SHRLGPA.SHRLGPA_GPA_HOURS <= 60
-       and SHRLGPA.SHRLGPA_GPA_HOURS >= 31
+        and SHRLGPA.SHRLGPA_GPA_HOURS <= 60
+        and SHRLGPA.SHRLGPA_GPA_HOURS >= 31
             )             
     or(SHRLGPA.SHRLGPA_GPA < 1.700
-       and SHRLGPA.SHRLGPA_GPA_HOURS < 30
-            )  
+        and SHRLGPA.SHRLGPA_GPA_HOURS < 30
             )
-)
+        )
+    )
+
 /* VALID: Ranger School standards (202110 ref.)*/
 or ( SHRTGPA.SHRTGPA_GPA < 2.000 and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS')       
-
 
     and exists(
         select *
@@ -78,4 +78,4 @@ or ( SHRTGPA.SHRTGPA_GPA < 2.000 and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS')
     )
 
 ORDER BY
-      stvclas_code, SPRIDEN_LAST_NAME
+      STVCLAS.STVCLAS_CODE, SPRIDEN.SPRIDEN_LAST_NAME
