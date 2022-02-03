@@ -6,9 +6,8 @@ select
     SHRTTRM.SHRTTRM_TERM_CODE ASTD_Term_Code,
     SHRTTRM2.SHRTTRM_ASTD_CODE_END_OF_TERM Prev_ASTD_Code, 
     SHRTTRM2.SHRTTRM_TERM_CODE Prev_Term_Code
-    
-    
-    from SPRIDEN
+       
+    from SPRIDEN SPRIDEN
     
     join STVTERM STVTERM on STVTERM.STVTERM_CODE = 202110
     
