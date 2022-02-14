@@ -1,5 +1,6 @@
 (
     SGBSTDN.SGBSTDN_MAJR_CODE_1 in ('AFSC', 'ENBI', 'CONB', 'EEIN', 'FOHE', 'WLSC')
+
     and(
         (
             not exists(
@@ -13,6 +14,7 @@
                 and SHRTCKN.SHRTCKN_SUBJ_CODE = 'EFB'
                 and SHRTCKN.SHRTCKN_CRSE_NUMB = 202
             )
+
         and not exists(
                 select *
 
@@ -23,6 +25,7 @@
                 and SHRTCKN.SHRTCKN_CRSE_NUMB = 202
             )
         )
+
     or(
             not exists(
                 select *
