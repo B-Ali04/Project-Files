@@ -1,0 +1,19 @@
+(
+    (
+        SHRLGPA.SHRLGPA_GPA_HOURS_EARNED < 30
+        and SHRLGPA.SHRLGPA_GPA < 1.700
+    )
+    or(
+        SHRLGPA.SHRLGPA_GPA_HOURS_EARNED > 30
+        and SHRLGPA.SHRLGPA_GPA_HOURS_EARNED <= 60
+        and SHRLGPA.SHRLGPA_GPA < 1.850
+    )
+    or(
+        SHRLGPA.SHRLGPA_GPA_HOURS_EARNED > 60
+        and SHRLGPA.SHRLGPA_GPA < 2.000
+    )
+    or(
+        SHRLGPA.SHRLGPA_GPA < 2.000
+        and SGBSTDN.SGBSTDN_DEGC_CODE_1 = 'AAS'
+    )
+)
