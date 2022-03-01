@@ -20,7 +20,7 @@ inner join SFRSTCR SFRSTCR on SFRSTCR.SFRSTCR_PIDM = s.SPRIDEN_PIDM
         and SFRSTCR.SFRSTCR_TERM_CODE = t.STVTERM_CODE
 
 inner join ssbsect ssbsect on ssbsect.ssbsect_crn = sfrstcr.sfrstcr_crn
-        and ssbsect.ssbsect_gmod_code= 'Y'
+        
 --join shrtckg g on g.shrtckg_pidm = s.spriden_pidm and g.shrtckg_term_code = t.stvterm_code
 
 
@@ -29,7 +29,7 @@ and s.spriden_change_ind is null
 --and spriden_id = 'F00171621'
 --cond 1          and a.sgbstdn_majr_code_1 in ('SUS')
 --cond 2
- 
+and ssbsect.ssbsect_gmod_code= 'Y'
 and (exists(
 
 select * 
